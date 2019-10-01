@@ -37,15 +37,8 @@ public class HybridServer {
 						try (Socket socket = serverSocket.accept()) {
 							if (stop) break;
 							
-							// Responder al cliente
-							String html = "<html><head></head><body>Hybrid Server</body></html>";
-							OutputStream clientOutput = socket.getOutputStream();
-								    
-							clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
-							clientOutput.write(("Content-Length: " + html.length() + "\r\n\r\n").getBytes());
-							clientOutput.write(html.getBytes());
-							
-							clientOutput.flush();
+							//el constructor de ServiceThread puede lanzar IOException
+							new Thread(new ServiceThread(socket)).start();
 						}
 					}
 				} catch (IOException e) {
