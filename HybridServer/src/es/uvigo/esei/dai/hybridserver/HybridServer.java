@@ -1,16 +1,18 @@
 package es.uvigo.esei.dai.hybridserver;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HybridServer {
 	private static final int SERVICE_PORT = 8888;
 	private Thread serverThread;
 	private boolean stop;
+	private final int MAX_THREADS = 50;
 
 	public HybridServer() {
 		// TODO Auto-generated constructor stub
@@ -33,12 +35,12 @@ public class HybridServer {
 			@Override
 			public void run() {
 				try (final ServerSocket serverSocket = new ServerSocket(SERVICE_PORT)) {
+					ExecutorService threadPool = Executors.newFixedThreadPool(MAX_THREADS);
 					while (true) {
 						try (Socket socket = serverSocket.accept()) {
 							if (stop) break;
 							
-							//el constructor de ServiceThread puede lanzar IOException
-							new Thread(new ServiceThread(socket)).start();
+							threadPool.execute(new ServiceThread(socket));
 						}
 					}
 				} catch (IOException e) {
