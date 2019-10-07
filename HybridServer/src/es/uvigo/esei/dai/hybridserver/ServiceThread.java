@@ -52,7 +52,7 @@ public class ServiceThread implements Runnable {
 
 					} else {
 						if (request.getMethod().equals(HTTPRequestMethod.POST)) {
-							controller.addPage(request.getContent());
+							controller.addPage(request.getResourceParameters().get("html"));
 						}
 						if (request.getMethod().equals(HTTPRequestMethod.DELETE)) {
 							String uuid = request.getResourceParameters().get("uuid");
