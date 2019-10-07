@@ -12,14 +12,15 @@ public class HTTPResponse {
 	HTTPResponseStatus status;
 	String version = "";
 	String content = "";
-	Map<String, String> parameters = new LinkedHashMap<String,String>();
+	Map<String, String> parameters = new LinkedHashMap<>();
 	
 	public HTTPResponse() {
-		
+		// por defecto devuelve un estado 200 OK
+		this.setVersion(HTTPHeaders.HTTP_1_1.getHeader());
+		this.setStatus(HTTPResponseStatus.S200);
 	}
 
 	public HTTPResponseStatus getStatus() {
-		// TODO Auto-generated method stub
 		return status;
 	}
 
@@ -28,7 +29,6 @@ public class HTTPResponse {
 	}
 
 	public String getVersion() {
-		// TODO Auto-generated method stub
 		return this.version;
 	}
 
@@ -37,7 +37,6 @@ public class HTTPResponse {
 	}
 
 	public String getContent() {
-		// TODO Auto-generated method stub
 		return this.content;
 	}
 
@@ -46,23 +45,19 @@ public class HTTPResponse {
 	}
 
 	public Map<String, String> getParameters() {
-		// TODO Auto-generated method stub
 		return this.parameters;
 	}
 
 	public String putParameter(String name, String value) {
-		// TODO Auto-generated method stub
 		String  previousValue = this.parameters.put(name, value);
 		return previousValue;
 	}
 
 	public boolean containsParameter(String name) {
-		// TODO Auto-generated method stub	
 		return this.parameters.containsKey(name);
 	}
 
 	public String removeParameter(String name) {
-		// TODO Auto-generated method stub
 		String previousValue = this.parameters.remove(name);
 		return previousValue;
 	}
@@ -72,7 +67,6 @@ public class HTTPResponse {
 	}
 
 	public List<String> listParameters() {
-		// TODO Auto-generated method stub
 		List<String> parametersList = new LinkedList<String>();
 		for (String key : this.parameters.keySet()) {
 			parametersList.add(key + ": " + parameters.get(key));
@@ -88,17 +82,18 @@ public class HTTPResponse {
 		writer.write(" ");
 		writer.write(this.getStatus().getStatus());
 		writer.write("\r\n");
-		if(!this.listParameters().isEmpty()) {
+		if (!this.listParameters().isEmpty()) {
 			writer.write(this.listParameters().toString());
 			writer.write("\r\n");
 		}
-		if(this.content.length() != 0) {			
+		if (this.content.length() != 0) {
 			writer.write("Content-Length: " + this.content.length());
 			writer.write("\r\n\r\n");
 			writer.write(this.getContent());
 		} else {
 			writer.write("\r\n");
 		}
+		writer.flush();
 	}
 
 	@Override
