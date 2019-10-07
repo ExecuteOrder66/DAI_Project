@@ -39,6 +39,10 @@ public class MemoryDAO implements DAO{
 		return 1;
 	}
 	
+	public String deletePage(String uid) {
+		return this.pages.remove(uid);
+	}
+	
 	public boolean isPage(String uuid) {
 		boolean result = false;
 		for(String key : this.pages.keySet()) {

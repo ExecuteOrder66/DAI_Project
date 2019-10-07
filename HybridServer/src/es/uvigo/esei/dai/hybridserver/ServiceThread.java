@@ -26,18 +26,13 @@ public class ServiceThread implements Runnable{
 	@Override
 	public void run() {
 		try(Socket socket = this.clientSocket){
-			System.out.println("Dentro Run()");
 			// http://localhost:8888/html
 			// http://localhost:8888/html?uuid=6df1047e-cf19-4a83-8cf3-38f5e53f7725
 			Reader reader = new InputStreamReader(socket.getInputStream());
-			System.out.println("input");
 			HTTPRequest request = new HTTPRequest(reader);
-			System.out.println("request");
 			Writer writer = new OutputStreamWriter(socket.getOutputStream());
-			System.out.println("write");
 			HTTPResponse response = new HTTPResponse();
-			
-			System.out.println("Hola");
+
 
 			
 			if(request.getResourceName().equals("html")) { //comprobar error 400
@@ -57,7 +52,17 @@ public class ServiceThread implements Runnable{
 					response.print(writer);
 				} else {
 					if(request.getMethod().equals(HTTPRequestMethod.POST)) {
-						controller.addPage(request.getContent());	//hacer que devuelva un valor en caso de error?
+						controller.addPage(request.getContent());	
+					}
+					if(request.getMethod().equals(HTTPRequestMethod.DELETE)) {
+						String uuid = request.getResourceParameters().get("uuid");
+						if(controller.deletePage(uuid) != null) {
+							response.setContent( "<html><head></head><body>Borrada la pagina: " + uuid +"</body></html>");
+						}else {
+							String error404 = "<html><head></head><body>ERROR 404: page not found</body></html>";
+							response.setStatus(HTTPResponseStatus.forCode(404));
+							response.setContent(error404);
+						}
 					}
 				}
 			} else {

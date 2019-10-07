@@ -17,7 +17,7 @@ public class HTTPResponse {
 	public HTTPResponse() {
 		// por defecto devuelve un estado 200 OK
 		this.setVersion(HTTPHeaders.HTTP_1_1.getHeader());
-		this.setStatus(HTTPResponseStatus.S200);
+		this.setStatus(HTTPResponseStatus.forCode(200));
 	}
 
 	public HTTPResponseStatus getStatus() {

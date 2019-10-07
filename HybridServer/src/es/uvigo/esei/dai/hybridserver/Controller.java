@@ -18,10 +18,13 @@ public class Controller {
 		return this.memory.getPage(uid);
 	}
 	
-	public void addPage(String value) {
-		this.memory.addPage(value);
+	public int addPage(String value) {
+		return this.memory.addPage(value);
 	}
 	
+	public String deletePage(String uid) {
+		return this.memory.deletePage(uid);
+	}
 	public boolean isPage(String uuid) {
 		return this.memory.isPage(uuid);
 	}

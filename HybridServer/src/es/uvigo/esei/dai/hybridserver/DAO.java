@@ -9,4 +9,6 @@ public interface DAO {
 	public int addPage(String value);
 	
 	public boolean isPage(String uuid);
+	
+	public String deletePage(String uid);
 }
