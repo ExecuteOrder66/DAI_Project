@@ -33,7 +33,6 @@ public class ServiceThread implements Runnable{
 			Writer writer = new OutputStreamWriter(socket.getOutputStream());
 			HTTPResponse response = new HTTPResponse();
 
-
 			
 			if(request.getResourceName().equals("html")) { //comprobar error 400
 				if(request.getMethod().equals(HTTPRequestMethod.GET)) {
@@ -49,7 +48,7 @@ public class ServiceThread implements Runnable{
 							response.setContent(error404);
 						}		
 					}
-					response.print(writer);
+
 				} else {
 					if(request.getMethod().equals(HTTPRequestMethod.POST)) {
 						controller.addPage(request.getContent());	
@@ -65,6 +64,7 @@ public class ServiceThread implements Runnable{
 						}
 					}
 				}
+			response.print(writer);		//Enviamos respuesta
 			} else {
 				String error400 = "<html><head></head><body>ERROR 400: bad request</body></html>";
 				response.setStatus(HTTPResponseStatus.forCode(400));
@@ -72,31 +72,15 @@ public class ServiceThread implements Runnable{
 				response.print(writer);
 			}
 			
-
-			// Responder al cliente
-			/*HTTPResponse response = new HTTPResponse();
-			response.setVersion(HTTPHeaders.HTTP_1_1.getHeader());
-			response.setStatus(HTTPResponseStatus.S200);
-			response.setContent(controller.getPage(uuid));					
-			Writer writer = new OutputStreamWriter(socket.getOutputStream());
-			response.print(writer);
-				
-			/*String html = "<html><head></head><body>Hybrid Server</body></html>";
-			OutputStream clientOutput = socket.getOutputStream();
-				    
-			clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
-			clientOutput.write(("Content-Length: " + html.length() + "\r\n\r\n").getBytes());
-			clientOutput.write(html.getBytes());
-			
-			clientOutput.flush();*/
 		}catch(HTTPParseException eHTTP) {
 			//ERROR PARSEO HTTP
 			eHTTP.printStackTrace();
-		}
-		catch(IOException e) {
+		}catch(IOException e) {
 			//Duda si capturar aqui la IOException o si capturarla en el serverThread 
 			//o si capturarla y relanzarla
 			//ERROR 500
+			String error500 = "<html><head></head><body>ERROR 500: Internal Server Error</body></html>";
+			
 			e.printStackTrace();
 		}
 	}

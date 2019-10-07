@@ -67,8 +67,10 @@ public class HTTPRequest {
 				}
 			}
 			if (headerParameters.containsKey("Content-Length")) {
-				this.content = br.readLine();
 				this.contentLength = Integer.parseInt(headerParameters.get("Content-Length"));
+				char [] buffer = new char[this.contentLength];
+				br.read(buffer);
+				this.content = new String(buffer);
 				String type = headerParameters.get("Content-Type");
 				if (type != null && type.startsWith("application/x-www-form-urlencoded")) {
 					this.content = URLDecoder.decode(content, "UTF-8");

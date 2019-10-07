@@ -11,4 +11,6 @@ public interface DAO {
 	public boolean isPage(String uuid);
 	
 	public String deletePage(String uid);
+	
+	
 }
