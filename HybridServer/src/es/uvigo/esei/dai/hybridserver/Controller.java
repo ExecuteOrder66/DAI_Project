@@ -3,9 +3,9 @@ package es.uvigo.esei.dai.hybridserver;
 
 
 public class Controller {
-	MemoryDAO memory;
+	DAO memory;
 	
-	public Controller(MemoryDAO memory) {
+	public Controller(DAO memory) {
 		// TODO Auto-generated constructor stub
 		this.memory = memory;
 	}

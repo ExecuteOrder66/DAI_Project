@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class MemoryDAO {
+public class MemoryDAO implements DAO{
 	Map<String, String> pages = new LinkedHashMap<String, String>();
 	List<String> index = new LinkedList<String>();
 	
@@ -31,11 +31,12 @@ public class MemoryDAO {
 		return this.pages.get(uid);
 	}
 	
-	public void addPage(String value) {
+	public int addPage(String value) {
 		UUID randomUuid = UUID.randomUUID();
 		String uuid = randomUuid.toString();
 		pages.put(uuid, value);
 		index.add("<a href=\"html?uuid=" + uuid + "\">" + uuid + "</a><br>");
+		return 1;
 	}
 	
 	public boolean isPage(String uuid) {
