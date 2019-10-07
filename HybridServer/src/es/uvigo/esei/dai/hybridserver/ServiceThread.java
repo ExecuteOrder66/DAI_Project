@@ -75,12 +75,25 @@ public class ServiceThread implements Runnable {
 				}
 			} catch (HTTPParseException eHTTP) {
 				// ERROR PARSEO HTTP
+				Writer writer = new OutputStreamWriter(socket.getOutputStream());
+				HTTPResponse response = new HTTPResponse();
+				String error400 = "<html><head></head><body>ERROR 400: bad request</body></html>";
+				
+				response.setStatus(HTTPResponseStatus.forCode(400));
+				response.setContent(error400);
+				response.print(writer); // Enviamos respuesta
+				
 				eHTTP.printStackTrace();
 			} catch (IOException e) {
-				// Duda si capturar aqui la IOException o si capturarla en el serverThread
-				// o si capturarla y relanzarla
 				// ERROR 500
+				Writer writer = new OutputStreamWriter(socket.getOutputStream());
+				HTTPResponse response = new HTTPResponse();
 				String error500 = "<html><head></head><body>ERROR 500: Internal Server Error</body></html>";
+				
+				response.setStatus(HTTPResponseStatus.forCode(500));
+				response.setContent(error500);
+				response.print(writer); // Enviamos respuesta
+				
 				e.printStackTrace();
 			}
 
