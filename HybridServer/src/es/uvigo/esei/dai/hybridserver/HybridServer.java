@@ -7,25 +7,27 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class HybridServer {
 	private static final int SERVICE_PORT = 8888;
 	private final int MAX_THREADS = 50;
 	private Thread serverThread;
 	private boolean stop;
-	Controller controller;
+	private Controller controller;
+	private ExecutorService threadPool; 
 
 	public HybridServer() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public HybridServer(Map<String, String> pages) {
-		// TODO Auto-generated constructor stub
 		this.controller = new Controller(new MemoryDAO(pages));
 	}
 
 	public HybridServer(Properties properties) {
 		// TODO Auto-generated constructor stub
+		//PRIORIDAD ALTA
 	}
 
 	public int getPort() {
@@ -37,7 +39,7 @@ public class HybridServer {
 			@Override
 			public void run() {
 				try (final ServerSocket serverSocket = new ServerSocket(SERVICE_PORT)) {
-					ExecutorService threadPool = Executors.newFixedThreadPool(MAX_THREADS);
+					threadPool = Executors.newFixedThreadPool(MAX_THREADS);
 					while (true) {
 						Socket socket = serverSocket.accept();
 						if (stop) break;
@@ -69,6 +71,13 @@ public class HybridServer {
 			this.serverThread.join();
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
+		}
+		threadPool.shutdownNow();
+		 
+		try {
+		  threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+		  e.printStackTrace();
 		}
 
 		this.serverThread = null;
