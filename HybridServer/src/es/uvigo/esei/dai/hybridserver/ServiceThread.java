@@ -52,7 +52,16 @@ public class ServiceThread implements Runnable {
 
 					} else {
 						if (request.getMethod().equals(HTTPRequestMethod.POST)) {
-							controller.addPage(request.getResourceParameters().get("html"));
+							//controller.addPage(request.getContent());
+							//hacer comprobacion post
+							if(request.getResourceParameters().containsKey("html")) {
+								String uuid = controller.addPage(request.getResourceParameters().get("html"));
+								response.setContent("<a href=\"html?uuid=" + uuid + "\">" + uuid + "</a>");
+							} else {
+								String error400 = "<html><head></head><body>ERROR 400: bad request</body></html>";
+								response.setStatus(HTTPResponseStatus.forCode(400));
+								response.setContent(error400);
+							}
 						}
 						if (request.getMethod().equals(HTTPRequestMethod.DELETE)) {
 							String uuid = request.getResourceParameters().get("uuid");
