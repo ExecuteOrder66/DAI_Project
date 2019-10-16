@@ -18,7 +18,7 @@ public class Controller {
 		return this.memory.getPage(uid);
 	}
 	
-	public int addPage(String value) {
+	public String addPage(String value) {
 		return this.memory.addPage(value);
 	}
 	

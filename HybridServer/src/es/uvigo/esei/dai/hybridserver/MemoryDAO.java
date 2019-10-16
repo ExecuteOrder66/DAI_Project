@@ -31,12 +31,12 @@ public class MemoryDAO implements DAO {
 		return this.pages.get(uid);
 	}
 
-	public int addPage(String value) {
+	public String addPage(String value) {
 		UUID randomUuid = UUID.randomUUID();
 		String uuid = randomUuid.toString();
 		pages.put(uuid, value);
 		index.add("<a href=\"html?uuid=" + uuid + "\">" + uuid + "</a><br>");
-		return 1;
+		return uuid;
 	}
 
 	public String deletePage(String uid) {

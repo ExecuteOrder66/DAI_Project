@@ -6,7 +6,7 @@ public interface DAO {
 	
 	public String getPage(String uid);
 	
-	public int addPage(String value);
+	public String addPage(String value);
 	
 	public boolean isPage(String uuid);
 	
