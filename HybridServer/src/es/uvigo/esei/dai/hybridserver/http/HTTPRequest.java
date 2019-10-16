@@ -23,62 +23,67 @@ public class HTTPRequest {
 		String data = br.readLine();
 		String[] dataLineRscChainParams;
 		String[] dataLineRscChainParam;
-
-		// leer y analizar primera línea
-		String[] dataLine = data.split(" ");
-		if (dataLine.length < 3) {
-			throw new HTTPParseException();
-		} else {
-			this.method = HTTPRequestMethod.valueOf(dataLine[0]);
-			this.resourceChain = dataLine[1]; // cadena de busq
-			this.httpVersion = dataLine[2];
-			if (dataLine[1].equals("/")) {
-				this.resourceChain = dataLine[1];
+		
+		if(data!=null) {
+			// analizar primera línea
+			String[] dataLine = data.split(" ");
+			if (dataLine.length < 3) {
+				throw new HTTPParseException();
 			} else {
-				String[] dataLineRscChain = dataLine[1].split("\\?"); // separar nombre de busq de param de busq
-				if (dataLineRscChain.length == 1) { // comprobar si la cadena de busq contiene un nombre de busq pero no param de busq
-					this.resourceChain = dataLineRscChain[0];
-					this.resourceName = dataLineRscChain[0].replaceFirst("/", ""); // almacenar resourceName eliminando el slash de comienzo de línea
-					this.resourcePath = resourceName.split("/");
+				this.method = HTTPRequestMethod.valueOf(dataLine[0]);
+				this.resourceChain = dataLine[1]; // cadena de busq
+				this.httpVersion = dataLine[2];
+				if (dataLine[1].equals("/")) {
+					this.resourceChain = dataLine[1];
 				} else {
-					if (dataLineRscChain.length == 2) { // comprobar si la cadena de busq contiene nombre de busq y param de búsqueda
-						this.resourceName = dataLineRscChain[0].replaceFirst("/", "");
+					String[] dataLineRscChain = dataLine[1].split("\\?"); // separar nombre de busq de param de busq
+					if (dataLineRscChain.length == 1) { // comprobar si la cadena de busq contiene un nombre de busq pero no param de busq
+						this.resourceChain = dataLineRscChain[0];
+						this.resourceName = dataLineRscChain[0].replaceFirst("/", ""); // almacenar resourceName eliminando el slash de comienzo de línea
 						this.resourcePath = resourceName.split("/");
-						dataLineRscChainParams = dataLineRscChain[1].split("&");
-						for (int i = 0; i < dataLineRscChainParams.length; i++) {
-							dataLineRscChainParam = dataLineRscChainParams[i].split("=");
-							this.resourceParameters.put(dataLineRscChainParam[0], dataLineRscChainParam[1]);
-							//System.out.println("TESTING PARAMETERS: " + dataLineRscChainParam[0] + "=" + dataLineRscChainParam[1]);
+					} else {
+						if (dataLineRscChain.length == 2) { // comprobar si la cadena de busq contiene nombre de busq y param de búsqueda
+							this.resourceName = dataLineRscChain[0].replaceFirst("/", "");
+							this.resourcePath = resourceName.split("/");
+							dataLineRscChainParams = dataLineRscChain[1].split("&");
+							for (int i = 0; i < dataLineRscChainParams.length; i++) {
+								dataLineRscChainParam = dataLineRscChainParams[i].split("=");
+								this.resourceParameters.put(dataLineRscChainParam[0], dataLineRscChainParam[1]);
+								//System.out.println("TESTING PARAMETERS: " + dataLineRscChainParam[0] + "=" + dataLineRscChainParam[1]);
+							}
 						}
 					}
 				}
-			}
-			
-			// leer y analizar el resto de líneas
-			data = br.readLine();
-			while (!data.equals("")) {
-				dataLine = data.split(": ");
-				if (dataLine.length < 2) {
-					throw new HTTPParseException();
-				} else {
-					//System.out.println("TESTING: " + dataLine[0] + ": " + dataLine[1]);
-					this.headerParameters.put(dataLine[0], dataLine[1]);
-					data = br.readLine();
+				
+				// analizar el resto de líneas
+				data = br.readLine();
+				while (!data.equals("")) {
+					dataLine = data.split(": ");
+					if (dataLine.length < 2) {
+						throw new HTTPParseException();
+					} else {
+						//System.out.println("TESTING: " + dataLine[0] + ": " + dataLine[1]);
+						this.headerParameters.put(dataLine[0], dataLine[1]);
+						data = br.readLine();
+					}
 				}
-			}
-			if (headerParameters.containsKey("Content-Length")) {
-				this.contentLength = Integer.parseInt(headerParameters.get("Content-Length"));
-				char [] buffer = new char[this.contentLength];
-				br.read(buffer);
-				this.content = new String(buffer);
-				String type = headerParameters.get("Content-Type");
-				if (type != null && type.startsWith("application/x-www-form-urlencoded")) {
-					this.content = URLDecoder.decode(content, "UTF-8");
-				}
-				dataLineRscChainParams = content.split("&");
-				for (int i = 0; i < dataLineRscChainParams.length; i++) {
-					dataLineRscChainParam = dataLineRscChainParams[i].split("=");
-					this.resourceParameters.put(dataLineRscChainParam[0], dataLineRscChainParam[1]);
+				if (headerParameters.containsKey("Content-Length")) {
+					this.contentLength = Integer.parseInt(headerParameters.get("Content-Length"));
+					char[] buffer = new char[this.contentLength];
+					br.read(buffer);
+					
+					this.content = new String(buffer);
+					
+					String type = headerParameters.get("Content-Type");
+					if (type != null && type.startsWith("application/x-www-form-urlencoded")) {
+						this.content = URLDecoder.decode(content, "UTF-8");
+					}
+					//System.out.println(content);
+					dataLineRscChainParams = content.split("&");
+					for (int i = 0; i < dataLineRscChainParams.length; i++) {
+						dataLineRscChainParam = dataLineRscChainParams[i].split("=");
+						this.resourceParameters.put(dataLineRscChainParam[0], dataLineRscChainParam[1]);
+					}
 				}
 			}
 		}
