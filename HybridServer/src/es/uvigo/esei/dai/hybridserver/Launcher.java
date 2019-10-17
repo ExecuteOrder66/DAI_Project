@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 
 public class Launcher {
 	public static void main(String[] args) {
+		/*
 		Map<String, String> pages = new LinkedHashMap<String, String>();
 		pages.put("6df1047e-cf19-4a83-8cf3-38f5e53f7725", "<html><head></head><body>This is the html page 6df1047e-cf19-4a83-8cf3-38f5e53f7725.</body></html>");
 		pages.put("79e01232-5ea4-41c8-9331-1c1880a1d3c2", "<html><head></head><body>This is the html page 79e01232-5ea4-41c8-9331-1c1880a1d3c2.</body></html>");
@@ -22,9 +23,10 @@ public class Launcher {
 		pages.put("f959ecb3-6382-4ae5-9325-8fcbc068e446", "<html><head></head><body>This is the html page f959ecb3-6382-4ae5-9325-8fcbc068e446.</body></html>");
 		pages.put("2471caa8-e8df-44d6-94f2-7752a74f6819", "<html><head></head><body>This is the html page 2471caa8-e8df-44d6-94f2-7752a74f6819.</body></html>");
 		pages.put("fa0979ca-2734-41f7-84c5-e40e0886e408", "<html><head></head><body>This is the html page fa0979ca-2734-41f7-84c5-e40e0886e408.</body></html>");
+		*/
 		try {
 			if(args.length == 0) {
-				new HybridServer(pages).start();
+				new HybridServer().start();	//Configuracion por defecto
 				System.out.println("Servidor activo...");
 			}else if(args.length == 1) {
 				//El argumento recibido es la ruta del fichero de configuracion

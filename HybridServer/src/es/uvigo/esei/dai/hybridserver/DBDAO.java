@@ -1,9 +1,19 @@
 package es.uvigo.esei.dai.hybridserver;
 
 public class DBDAO implements DAO {
+	/*
+	 * numClients=50 port=8888 
+	 * db.url=jdbc:mysql://localhost:3306/hstestdb
+	 * db.user=hsdb db.password=hsdbpass
+	 */
+	private String url;
+	private String user;
+	private String password;
 
-	public DBDAO() {
-		// TODO Auto-generated constructor stub
+	public DBDAO(String url, String user, String pass) {
+		this.url = url;
+		this.user = user;
+		this.password = pass;
 	}
 
 	@Override
