@@ -2,16 +2,14 @@ package es.uvigo.esei.dai.hybridserver;
 
 import java.util.Map;
 import java.util.Properties;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 
 
 public class Launcher {
 	public static void main(String[] args) {
-		/*
 		Map<String, String> pages = new LinkedHashMap<String, String>();
 		pages.put("6df1047e-cf19-4a83-8cf3-38f5e53f7725", "<html><head></head><body>This is the html page 6df1047e-cf19-4a83-8cf3-38f5e53f7725.</body></html>");
 		pages.put("79e01232-5ea4-41c8-9331-1c1880a1d3c2", "<html><head></head><body>This is the html page 79e01232-5ea4-41c8-9331-1c1880a1d3c2.</body></html>");
@@ -23,36 +21,16 @@ public class Launcher {
 		pages.put("f959ecb3-6382-4ae5-9325-8fcbc068e446", "<html><head></head><body>This is the html page f959ecb3-6382-4ae5-9325-8fcbc068e446.</body></html>");
 		pages.put("2471caa8-e8df-44d6-94f2-7752a74f6819", "<html><head></head><body>This is the html page 2471caa8-e8df-44d6-94f2-7752a74f6819.</body></html>");
 		pages.put("fa0979ca-2734-41f7-84c5-e40e0886e408", "<html><head></head><body>This is the html page fa0979ca-2734-41f7-84c5-e40e0886e408.</body></html>");
-		*/
-		try {
-			if(args.length == 0) {
-				new HybridServer().start();	//Configuracion por defecto
-				System.out.println("Servidor activo...");
-			}else if(args.length == 1) {
-				//El argumento recibido es la ruta del fichero de configuracion
-				try {
-					File fileConfig = new File(args[1]);
-					FileInputStream inFile = new FileInputStream(fileConfig);
-					
-					Properties properties = new Properties();
-					properties.load(inFile);	//Cargamos el fichero de configuracion
-					
-					new HybridServer(properties).start();	//Arrancamos servidor con propiedades
-				} catch (FileNotFoundException eFile) {
-					throw new FileNotFoundException("Archivo de configuracion no encontrado");
-				} catch (IOException eIO) {
-					throw new FileNotFoundException("Error al cargar el archivo de configuracion");
-				}
-			}else {
-				throw new IllegalArgumentException("Numero de argumentos incorrecto");
-			}	
-			System.out.println("Servidor activo...");
-		}catch(Exception e) {
-			System.out.println(e.getLocalizedMessage());
-			e.printStackTrace();
-		}
 		
+		Properties prop = new Properties();
+		//cargar las propiedades del fichero properties
+		try (InputStream input = new FileInputStream("config.props")) {
+            prop.load(input);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 		
-		
+		new HybridServer(prop).start();
+		System.out.println("Servidor activo...");
 	}
 }

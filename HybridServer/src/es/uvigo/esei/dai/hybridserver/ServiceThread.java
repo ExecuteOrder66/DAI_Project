@@ -6,7 +6,12 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.Socket;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
+import es.uvigo.esei.dai.hybridserver.controller.Controller;
 import es.uvigo.esei.dai.hybridserver.http.HTTPParseException;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequestMethod;
@@ -18,11 +23,11 @@ public class ServiceThread implements Runnable {
 	private Socket clientSocket;
 	private Controller controller;
 
-	public ServiceThread(Socket client, Controller control) {
+	public ServiceThread(Socket client, Controller controller) {
 		this.clientSocket = client;
-		this.controller = control;
+		this.controller = controller;
 	}
-
+	
 	@Override
 	public void run() {
 		try (Socket socket = this.clientSocket) {
@@ -38,7 +43,14 @@ public class ServiceThread implements Runnable {
 				if (request.getResourceName().equals("html")) { // comprobar error 400
 					if (request.getMethod().equals(HTTPRequestMethod.GET)) {
 						if (request.getResourceParameters().isEmpty()) {
-							response.setContent(controller.getIndex());
+							List<String> list = controller.getList();
+							Iterator<String> it = list.iterator();
+						    String content = "";
+						    while (it.hasNext()) {
+						    	String link = it.next();
+						    	content = content.concat("<a href=\"html?uuid=" + link + "\">" + link + "</a><br>");
+						    }
+							response.setContent(content);
 						} else {
 							String uuid = request.getResourceParameters().get("uuid");
 							if (controller.isPage(uuid)) { // comprobar error 404
@@ -104,6 +116,15 @@ public class ServiceThread implements Runnable {
 				response.print(writer); // Enviamos respuesta
 				
 				e.printStackTrace();
+			} catch (InvalidHtmlPageException e) {
+				// ERROR 404
+				Writer writer = new OutputStreamWriter(socket.getOutputStream());
+				HTTPResponse response = new HTTPResponse();
+				String error404 = "<html><head></head><body>ERROR 404: Internal Server Error</body></html>";
+				
+				response.setStatus(HTTPResponseStatus.forCode(404));
+				response.setContent(error404);
+				response.print(writer); // Enviamos respuesta
 			}
 
 		} catch (Exception e) {
