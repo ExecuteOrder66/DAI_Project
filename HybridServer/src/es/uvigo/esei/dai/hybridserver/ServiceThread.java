@@ -39,7 +39,13 @@ public class ServiceThread implements Runnable {
 				HTTPRequest request = new HTTPRequest(reader);
 				Writer writer = new OutputStreamWriter(socket.getOutputStream());
 				HTTPResponse response = new HTTPResponse();
-
+				
+				if (request.getResourceChain().equals("/")) {
+					response.setContent("<html><head></head><body>Hybrid Server</body></html>");
+					response.print(writer);
+				} else {
+					
+				
 				if (request.getResourceName().equals("html")) { // comprobar error 400
 					if (request.getMethod().equals(HTTPRequestMethod.GET)) {
 						if (request.getResourceParameters().isEmpty()) {
@@ -93,6 +99,7 @@ public class ServiceThread implements Runnable {
 					response.setStatus(HTTPResponseStatus.forCode(400));
 					response.setContent(error400);
 					response.print(writer);
+				}
 				}
 			} catch (HTTPParseException eHTTP) {
 				// ERROR PARSEO HTTP
