@@ -14,8 +14,8 @@ import es.uvigo.esei.dai.hybridserver.model.dao.DBDAO;
 import es.uvigo.esei.dai.hybridserver.model.dao.MemoryDAO;
 
 public class HybridServer {
-	private int service_port;
-	private int max_thread;
+	private int service_port=8888;
+	private int max_thread=50;
 	private Thread serverThread;
 	private ExecutorService threadPool; 
 	private boolean stop;
