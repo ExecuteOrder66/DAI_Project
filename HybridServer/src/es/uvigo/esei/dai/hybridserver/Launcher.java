@@ -16,7 +16,7 @@ public class Launcher {
 		}else if(args.length == 1) {		
 			Properties prop = new Properties();
 			//cargar las propiedades del fichero properties
-			try (InputStream input = new FileInputStream(args[1])) {
+			try (InputStream input = new FileInputStream(args[0])) {
 				prop.load(input);
 				
 				new HybridServer(prop).start();
