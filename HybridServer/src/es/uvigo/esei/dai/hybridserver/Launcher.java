@@ -22,15 +22,22 @@ public class Launcher {
 		pages.put("2471caa8-e8df-44d6-94f2-7752a74f6819", "<html><head></head><body>This is the html page 2471caa8-e8df-44d6-94f2-7752a74f6819.</body></html>");
 		pages.put("fa0979ca-2734-41f7-84c5-e40e0886e408", "<html><head></head><body>This is the html page fa0979ca-2734-41f7-84c5-e40e0886e408.</body></html>");
 		
-		Properties prop = new Properties();
-		//cargar las propiedades del fichero properties
-		try (InputStream input = new FileInputStream("config.props")) {
-            prop.load(input);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-		
-		new HybridServer(prop).start();
-		System.out.println("Servidor activo...");
+		if(args.length == 0 ) {
+			new HybridServer().start();
+		}else if(args.length == 1) {		
+			Properties prop = new Properties();
+			//cargar las propiedades del fichero properties
+			try (InputStream input = new FileInputStream(args[1])) {
+				prop.load(input);
+			} catch (IOException ex) {
+				ex.printStackTrace();
+				throw new RuntimeException("Error al cargar el fichero de configuracion");
+			}
+			
+			new HybridServer(prop).start();
+			System.out.println("Servidor activo...");
+		}else {
+			System.err.println("Error en el numero de argumentos");
+		}
 	}
 }
