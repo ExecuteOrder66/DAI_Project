@@ -49,7 +49,6 @@ public class HTTPRequest {
 							for (int i = 0; i < dataLineRscChainParams.length; i++) {
 								dataLineRscChainParam = dataLineRscChainParams[i].split("=");
 								this.resourceParameters.put(dataLineRscChainParam[0], dataLineRscChainParam[1]);
-								//System.out.println("TESTING PARAMETERS: " + dataLineRscChainParam[0] + "=" + dataLineRscChainParam[1]);
 							}
 						}
 					}
@@ -62,28 +61,30 @@ public class HTTPRequest {
 					if (dataLine.length < 2) {
 						throw new HTTPParseException();
 					} else {
-						//System.out.println("TESTING: " + dataLine[0] + ": " + dataLine[1]);
 						this.headerParameters.put(dataLine[0], dataLine[1]);
 						data = br.readLine();
 					}
 				}
 				if (headerParameters.containsKey("Content-Length")) {
 					this.contentLength = Integer.parseInt(headerParameters.get("Content-Length"));
-					char[] buffer = new char[this.contentLength];
-					br.read(buffer);
-					
-					this.content = new String(buffer);
-					
-					String type = headerParameters.get("Content-Type");
-					if (type != null && type.startsWith("application/x-www-form-urlencoded")) {
-						this.content = URLDecoder.decode(content, "UTF-8");
-					}
-					//System.out.println(content);
-					dataLineRscChainParams = content.split("&");
-					for (int i = 0; i < dataLineRscChainParams.length; i++) {
-						dataLineRscChainParam = dataLineRscChainParams[i].split("=");
-						this.resourceParameters.put(dataLineRscChainParam[0], dataLineRscChainParam[1]);
-					}
+					if(contentLength > 0) {
+						char[] buffer = new char[this.contentLength];
+						br.read(buffer);
+						
+						this.content = new String(buffer);
+						
+						String type = headerParameters.get("Content-Type");
+						if (type != null && type.startsWith("application/x-www-form-urlencoded")) {
+							this.content = URLDecoder.decode(content, "UTF-8");
+						}
+						System.out.println();
+						dataLineRscChainParams = content.split("&");
+						for (int i = 0; i < dataLineRscChainParams.length; i++) {
+							System.out.println(dataLineRscChainParams[i]);
+							dataLineRscChainParam = dataLineRscChainParams[i].split("=");
+							this.resourceParameters.put(dataLineRscChainParam[0], dataLineRscChainParam[1]);
+						}
+					}	
 				}
 			}
 		}
