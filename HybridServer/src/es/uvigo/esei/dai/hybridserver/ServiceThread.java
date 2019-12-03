@@ -36,7 +36,8 @@ public class ServiceThread implements Runnable {
 				HTTPResponse response = new HTTPResponse();
 
 				if (request.getResourceChain().equals("/")) {
-					response.setContent("<html><head></head><body>Hybrid Server</body></html>");
+					response.setContent("<html><head></head><body>Boveda Martinez, Alejandro\n" + 
+							"Curras Ferradas, Rodrigo</body></html>");
 				} else {
 					if (request.getResourceName().equals("html")) { // comprobar error 400
 						if (request.getMethod().equals(HTTPRequestMethod.GET)) {
