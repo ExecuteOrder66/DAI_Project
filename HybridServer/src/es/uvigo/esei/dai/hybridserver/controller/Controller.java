@@ -3,7 +3,7 @@ package es.uvigo.esei.dai.hybridserver.controller;
 import java.sql.SQLException;
 import java.util.List;
 
-import es.uvigo.esei.dai.hybridserver.InvalidHtmlPageException;
+import es.uvigo.esei.dai.hybridserver.InvalidPageException;
 import es.uvigo.esei.dai.hybridserver.model.dao.DAO;
 
 public class Controller implements DAO{
@@ -14,28 +14,28 @@ public class Controller implements DAO{
 	}
 	
 	@Override
-	public List<String> getList() {
-		return dao.getList();
+	public List<String> getList(String contentType) {
+		return dao.getList(contentType);
 	}
 	
 	@Override
-	public boolean isPage(String uuid) {
-		return dao.isPage(uuid);
+	public boolean isPage(String uuid, String contentType) {
+		return dao.isPage(uuid, contentType);
 	}
 	
 	@Override
-	public String getPage(String uid) throws InvalidHtmlPageException {
-		return this.dao.getPage(uid);
+	public String getPage(String uuid, String contentType) throws InvalidPageException {
+		return this.dao.getPage(uuid, contentType);
 	}
 	
 	@Override
-	public String addPage(String content) throws SQLException {
-		return this.dao.addPage(content);
+	public String addPage(String xsdUuid, String content, String contentType) throws SQLException, InvalidPageException {
+		return this.dao.addPage(xsdUuid, content, contentType);
 	}
 	
 	@Override
-	public String deletePage(String uuid) throws SQLException {
-		return this.dao.deletePage(uuid);
+	public String deletePage(String uuid, String contentType) throws SQLException {
+		return this.dao.deletePage(uuid, contentType);
 	}
 		
 }

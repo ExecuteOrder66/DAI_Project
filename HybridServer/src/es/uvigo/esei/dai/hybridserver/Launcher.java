@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class Launcher {
+	//http://localhost:8888/html?
 	public static void main(String[] args) {
 
 		if (args.length == 0) {

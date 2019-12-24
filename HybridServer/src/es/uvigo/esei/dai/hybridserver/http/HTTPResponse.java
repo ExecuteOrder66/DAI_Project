@@ -12,6 +12,7 @@ public class HTTPResponse {
 	HTTPResponseStatus status;
 	String version = "";
 	String content = "";
+	String contentType = "";
 	Map<String, String> parameters = new LinkedHashMap<>();
 	
 	public HTTPResponse() {
@@ -42,6 +43,18 @@ public class HTTPResponse {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+	
+	public String getContentType() {
+		return this.contentType;
+	}
+
+	public void setContentType(String contentType) {
+		if(contentType.equals("html")) {
+			this.contentType = MIME.TEXT_HTML.getMime();
+		} else if(contentType.equals("xml") || contentType.equals("xsd") || contentType.equals("xslt")) {
+			this.contentType = MIME.APPLICATION_XML.getMime();
+		}
 	}
 
 	public Map<String, String> getParameters() {
@@ -87,6 +100,8 @@ public class HTTPResponse {
 			writer.write("\r\n");
 		}
 		if (this.content.length() != 0) {
+			writer.write("Content-Type: " + getContentType());
+			writer.write("\r\n");
 			writer.write("Content-Length: " + this.content.length());
 			writer.write("\r\n\r\n");
 			writer.write(this.getContent());

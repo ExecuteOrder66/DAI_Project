@@ -36,24 +36,28 @@ public class ServiceThread implements Runnable {
 				HTTPResponse response = new HTTPResponse();
 
 				if (request.getResourceChain().equals("/")) {
-					response.setContent("<html><head></head><body>Boveda Martinez, Alejandro\n" + 
-							"Curras Ferradas, Rodrigo</body></html>");
+					response.setContent("<html><head></head><body>Hybrid Server</body></html>");
 				} else {
-					if (request.getResourceName().equals("html")) { // comprobar error 400
+					String contentType = request.getResourceName();
+					if (contentType.equals("html") || contentType.equals("xml") || contentType.equals("xsd")
+							|| contentType.equals("xslt")) {
+						// GET
 						if (request.getMethod().equals(HTTPRequestMethod.GET)) {
 							if (request.getResourceParameters().isEmpty()) {
-								List<String> list = controller.getList();
+								List<String> list = controller.getList(contentType);
 								Iterator<String> it = list.iterator();
 								String content = "";
 								while (it.hasNext()) {
 									String link = it.next();
 									content = content.concat("<a href=\"html?uuid=" + link + "\">" + link + "</a><br>");
 								}
+								response.setContentType(contentType);
 								response.setContent(content);
 							} else {
 								String uuid = request.getResourceParameters().get("uuid");
-								if (controller.isPage(uuid)) { // comprobar error 404
-									response.setContent(controller.getPage(uuid));
+								if (controller.isPage(uuid, contentType)) {
+									response.setContentType(contentType);
+									response.setContent(controller.getPage(uuid, contentType));
 								} else {
 									String error404 = "<html><head></head><body>ERROR 404: page not found</body></html>";
 									response.setStatus(HTTPResponseStatus.forCode(404));
@@ -61,19 +65,26 @@ public class ServiceThread implements Runnable {
 								}
 							}
 						} else {
-							if (request.getMethod().equals(HTTPRequestMethod.POST)) { // comprobar post
-								if (request.getResourceParameters().containsKey("html")) {
-									String uuid = controller.addPage(request.getResourceParameters().get("html"));
-									response.setContent("<a href=\"html?uuid=" + uuid + "\">" + uuid + "</a>");
+							// POST
+							if (request.getMethod().equals(HTTPRequestMethod.POST)) {
+								if (request.getResourceParameters().containsKey("html")
+										|| request.getResourceParameters().containsKey("xml")
+										|| request.getResourceParameters().containsKey("xsd")
+										|| (request.getResourceParameters().containsKey("xslt")
+										&& request.getResourceParameters().containsKey("xsd"))) {
+									String uuid = controller.addPage(request.getResourceParameters().get("xsd"), request.getResourceParameters().get(contentType), contentType);
+									response.setContentType(contentType);
+									response.setContent("<a href=\"" + contentType + "?uuid=" + uuid + "\">" + uuid + "</a>");
 								} else {
 									String error400 = "<html><head></head><body>ERROR 400: bad request</body></html>";
 									response.setStatus(HTTPResponseStatus.forCode(400));
 									response.setContent(error400);
 								}
 							}
+							// DELETE
 							if (request.getMethod().equals(HTTPRequestMethod.DELETE)) {
 								String uuid = request.getResourceParameters().get("uuid");
-								if (controller.deletePage(uuid) != null) {
+								if (controller.deletePage(uuid, contentType) != null) {
 									response.setContent(
 											"<html><head></head><body>Borrada la pagina: " + uuid + "</body></html>");
 								} else {
@@ -94,18 +105,18 @@ public class ServiceThread implements Runnable {
 				// ERROR PARSEO HTTP
 				Writer writer = new OutputStreamWriter(socket.getOutputStream());
 				HTTPResponse response = new HTTPResponse();
-				String error400 = "<html><head></head><body>ERROR 400: bad request</body></html>";
+				String error400 = "<html><head></head><body>ERROR 400: Bad Request</body></html>";
 
 				response.setStatus(HTTPResponseStatus.forCode(400));
 				response.setContent(error400);
 				response.print(writer); // Enviamos respuesta
 
 				eHTTP.printStackTrace();
-			} catch (InvalidHtmlPageException e) {
+			} catch (InvalidPageException e) {
 				// ERROR 404
 				Writer writer = new OutputStreamWriter(socket.getOutputStream());
 				HTTPResponse response = new HTTPResponse();
-				String error404 = "<html><head></head><body>ERROR 404: Internal Server Error</body></html>";
+				String error404 = "<html><head></head><body>ERROR 404: Not Found</body></html>";
 
 				response.setStatus(HTTPResponseStatus.forCode(404));
 				response.setContent(error404);

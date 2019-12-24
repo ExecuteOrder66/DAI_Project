@@ -14,14 +14,14 @@ public class MemoryDAO implements DAO {
 		this.pages = pages;
 	}
 
-	public List<String> getList() {
+	public List<String> getList(String contentType) {
 		for (String key : this.pages.keySet()) {
 			this.list.add(key);
 		}
 		return this.list;
 	}
 
-	public boolean isPage(String uuid) {
+	public boolean isPage(String uuid, String contentType) {
 		boolean result = false;
 		for (String key : this.pages.keySet()) {
 			if (key.equals(uuid)) {
@@ -31,11 +31,11 @@ public class MemoryDAO implements DAO {
 		return result;
 	}
 
-	public String getPage(String uuid) {
+	public String getPage(String uuid, String contentType) {
 		return this.pages.get(uuid);
 	}
 
-	public String addPage(String value) {
+	public String addPage(String xsdUuid, String value, String contentType) {
 		UUID randomUuid = UUID.randomUUID();
 		String uuid = randomUuid.toString();
 		pages.put(uuid, value);
@@ -43,7 +43,7 @@ public class MemoryDAO implements DAO {
 		return uuid;
 	}
 
-	public String deletePage(String uuid) {
+	public String deletePage(String uuid, String contentType) {
 		String toret = this.pages.remove(uuid);
 		if (toret != null) {
 			int elemIndex = this.list.indexOf(uuid);

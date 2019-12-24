@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import es.uvigo.esei.dai.hybridserver.InvalidHtmlPageException;
+import es.uvigo.esei.dai.hybridserver.InvalidPageException;
 
 public class DBDAO implements DAO {
 
@@ -24,9 +24,9 @@ public class DBDAO implements DAO {
 	}
 
 	@Override
-	public List<String> getList() {
+	public List<String> getList(String contentType) {
 		List<String> list = new LinkedList<>();
-		String query = "SELECT uuid FROM HTML";
+		String query = "SELECT uuid FROM " + contentType.toUpperCase();
 		// 1. Conexión a la base de datos
 		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
 			// 2. Creación de la consulta
@@ -46,8 +46,8 @@ public class DBDAO implements DAO {
 	}
 
 	@Override
-	public boolean isPage(String uuid) {
-		String query = "SELECT * FROM HTML WHERE uuid LIKE ?";
+	public boolean isPage(String uuid, String contentType) {
+		String query = "SELECT * FROM " + contentType.toUpperCase() + " WHERE uuid LIKE ?";
 		// 1. Conexión a la base de datos
 		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
 			// 2. Creación de la consulta
@@ -69,8 +69,8 @@ public class DBDAO implements DAO {
 	}
 
 	@Override
-	public String getPage(String uuid) throws InvalidHtmlPageException {
-		String query = "SELECT * FROM HTML WHERE uuid LIKE ?";
+	public String getPage(String uuid, String contentType) throws InvalidPageException {
+		String query = "SELECT * FROM " + contentType.toUpperCase() + " WHERE uuid LIKE ?";
 		// 1. Conexión a la base de datos
 		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
 			// 2. Creación de la consulta
@@ -81,7 +81,7 @@ public class DBDAO implements DAO {
 					if (result.next()) {
 						return result.getString("content");
 					} else {
-						throw new InvalidHtmlPageException("Error al recuperar el contenido");
+						throw new InvalidPageException("Error al recuperar el contenido");
 					}
 				}
 			}
@@ -92,35 +92,62 @@ public class DBDAO implements DAO {
 	}
 
 	@Override
-	public String addPage(String content) throws SQLException {
+	public String addPage(String xsdUuid, String content, String contentType) throws SQLException, InvalidPageException {
 		// Generar uuid aleatorio
 		UUID randomUuid = UUID.randomUUID();
 		String uuid = randomUuid.toString();
 
-		String query = "INSERT INTO HTML VALUES (?, ?)";
-
-		// 1. Conexión a la base de datos
-		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
-			// 2. Creación de la consulta
-			try (PreparedStatement statement = connection.prepareStatement(query)) {
-				statement.setString(1, uuid);
-				statement.setString(2, content);
-				// 3. Ejecución de la consulta
-				int result = statement.executeUpdate();
-				if (result == 1) {
-					return uuid;
-				} else {
-					throw new RuntimeException("Erro al insertar el contenido");
+		if (!contentType.equals("xslt")) {
+			String query = "INSERT INTO " + contentType.toUpperCase() + " VALUES (?, ?)";
+			// 1. Conexión a la base de datos
+			try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
+				// 2. Creación de la consulta
+				try (PreparedStatement statement = connection.prepareStatement(query)) {
+					statement.setString(1, uuid);
+					statement.setString(2, content);
+					// 3. Ejecución de la consulta
+					int result = statement.executeUpdate();
+					if (result == 1) {
+						return uuid;
+					} else {
+						throw new RuntimeException("Erro al insertar el contenido");
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
 			}
+		} else {
+			if(isPage(xsdUuid, "xsd")) {
+				String query = "INSERT INTO " + contentType.toUpperCase() + " VALUES (?, ?, ?)";
+				// 1. Conexión a la base de datos
+				try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
+					// 2. Creación de la consulta
+					try (PreparedStatement statement = connection.prepareStatement(query)) {
+						statement.setString(1, uuid);
+						statement.setString(2, content);
+						statement.setString(3, xsdUuid);
+						// 3. Ejecución de la consulta
+						int result = statement.executeUpdate();
+						if (result == 1) {
+							return uuid;
+						} else {
+							throw new RuntimeException("Erro al insertar el contenido");
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+						throw new RuntimeException(e);
+					}
+				}
+			} else {
+				throw new InvalidPageException("Error al recuperar el contenido");
+			}	
 		}
+
 	}
 
-	public String deletePage(String uuid) throws SQLException {
-		String query = "DELETE FROM HTML WHERE uuid LIKE ?";
+	public String deletePage(String uuid, String contentType) throws SQLException {
+		String query = "DELETE FROM " + contentType.toUpperCase() + " WHERE uuid LIKE ?";
 		// 1. Conexión a la base de datos
 		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
 			// 2. Creación de la consulta
