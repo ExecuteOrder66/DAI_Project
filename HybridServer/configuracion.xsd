@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://dai.esei.uvigo.es/configuracion"
+	xmlns:tns="http://dai.esei.uvigo.es/configuracion"
+	elementFormDefault="qualified">
+	
+	<complexType name="servers">
+		<all>
+			<!-- COMPLETAR, COMPROBAR SI USAR ALL -->
+		</all>
+	</complexType>
+	
+	<complexType name="database">
+		<!-- COMPLETAR -->
+	</complexType>
+	
+	<complexType name="connections">
+		<all>
+			<!-- COMPLETAR, COMPROBAR SI USAR ALL -->
+			<element name="http"></element>
+			<element name="webservice"></element>
+			<element name="numClients"></element>
+		</all>
+	</complexType>
+	
+	<complexType name="configuration">
+		<all>
+			<element name="connections" type="tns:connections"></element>
+			<element name="database" type="tns:database"></element>
+			<element name="servers" type="tns:servers"></element>
+		</all>
+	</complexType>
+	
+	<element name="configuration" type="tns:configuration">
+		
+	</element>
+</schema>

@@ -1,0 +1,11 @@
+
+*.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/controller/Controller.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/http/HTTPResponse.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/HybridServer.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/Launcher.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/model/dao/DAO.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/model/dao/DBDAO.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/model/dao/MemoryDAO.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/ServiceThread.class
+*.class
