@@ -9,3 +9,6 @@ HybridServer/bin/es/uvigo/esei/dai/hybridserver/model/dao/DBDAO.class
 HybridServer/bin/es/uvigo/esei/dai/hybridserver/model/dao/MemoryDAO.class
 HybridServer/bin/es/uvigo/esei/dai/hybridserver/ServiceThread.class
 *.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/HybridServer$1.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/HybridServer.class
+HybridServer/bin/es/uvigo/esei/dai/hybridserver/Launcher.class

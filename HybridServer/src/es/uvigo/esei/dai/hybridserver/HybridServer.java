@@ -3,6 +3,7 @@ package es.uvigo.esei.dai.hybridserver;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -19,7 +20,8 @@ public class HybridServer {
 	private Thread serverThread;
 	private ExecutorService threadPool; 
 	private boolean stop;
-	
+	private String web_service;
+	private List<ServerConfiguration> servers;
 	private Controller controller;
 	
 	public HybridServer() {
@@ -38,6 +40,19 @@ public class HybridServer {
 		this.service_port = Integer.parseInt(properties.getProperty("port"));
 		this.controller = new Controller(new DBDAO(properties.getProperty("db.url"), 
 				properties.getProperty("db.user"), properties.getProperty("db.password")));
+	}
+	
+	public HybridServer(Configuration config) {
+		//Falta probar
+		this.max_thread = config.getNumClients();
+		this.service_port = config.getHttpPort();
+		this.controller = new Controller(new DBDAO(
+				config.getDbURL(), 
+				config.getDbUser(), 
+				config.getDbPassword()
+				));
+		this.web_service = config.getWebServiceURL();
+		this.servers = config.getServers();
 	}
 
 	public int getPort() {

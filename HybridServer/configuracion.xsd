@@ -4,22 +4,33 @@
 	xmlns:tns="http://dai.esei.uvigo.es/configuracion"
 	elementFormDefault="qualified">
 	
+	<complexType name="server">
+		<attribute name="name" type="string" use="required"></attribute>
+		<attribute name="wsdl" type="anyURI" use="required"></attribute>
+		<attribute name="namespace" type="anyURI" use="required"></attribute>
+		<attribute name="service" type="string" use="required"></attribute>
+		<attribute name="httpAddress" type="anyURI" use="required"></attribute>
+	</complexType>
+	
 	<complexType name="servers">
-		<all>
-			<!-- COMPLETAR, COMPROBAR SI USAR ALL -->
-		</all>
+		<sequence minOccurs="0" maxOccurs="unbounded">
+			<element name="server" type="tns:server"></element>
+		</sequence>
 	</complexType>
 	
 	<complexType name="database">
-		<!-- COMPLETAR -->
+		<all>
+			<element name="user" type="string"></element> 
+			<element name="password" type="string"></element>
+			<element name="url" type="anyURI"></element>
+		</all>
 	</complexType>
 	
 	<complexType name="connections">
 		<all>
-			<!-- COMPLETAR, COMPROBAR SI USAR ALL -->
-			<element name="http"></element>
-			<element name="webservice"></element>
-			<element name="numClients"></element>
+			<element name="http" type="positiveInteger"></element>
+			<element name="webservice" type="anyURI"></element>
+			<element name="numClients" type="positiveInteger"></element>
 		</all>
 	</complexType>
 	
