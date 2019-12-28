@@ -12,3 +12,4 @@ HybridServer/bin/es/uvigo/esei/dai/hybridserver/ServiceThread.class
 HybridServer/bin/es/uvigo/esei/dai/hybridserver/HybridServer$1.class
 HybridServer/bin/es/uvigo/esei/dai/hybridserver/HybridServer.class
 HybridServer/bin/es/uvigo/esei/dai/hybridserver/Launcher.class
+*.class

@@ -34,15 +34,14 @@
 		</all>
 	</complexType>
 	
-	<complexType name="configuration">
-		<all>
-			<element name="connections" type="tns:connections"></element>
-			<element name="database" type="tns:database"></element>
-			<element name="servers" type="tns:servers"></element>
-		</all>
-	</complexType>
-	
-	<element name="configuration" type="tns:configuration">
-		
+	<element name="configuration">
+		<complexType>
+			<sequence>
+				<element name="connections" type="tns:connections" minOccurs="1" maxOccurs="1"></element>
+				<element name="database" type="tns:database" minOccurs="1" maxOccurs="1"></element>
+				<element name="servers" type="tns:servers" minOccurs="1" maxOccurs="1"></element>
+			</sequence>
+		</complexType>
 	</element>
+	
 </schema>
