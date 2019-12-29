@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://dai.esei.uvigo.es/configuracion"
-	xmlns:tns="http://dai.esei.uvigo.es/configuracion"
+	targetNamespace="http://www.esei.uvigo.es/dai/hybridserver"
+	xmlns:tns="http://www.esei.uvigo.es/dai/hybridserver"
 	elementFormDefault="qualified">
 	
 	<complexType name="server">
