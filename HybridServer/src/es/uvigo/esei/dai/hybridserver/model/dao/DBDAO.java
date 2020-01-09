@@ -92,7 +92,8 @@ public class DBDAO implements DAO {
 	}
 
 	@Override
-	public String addPage(String xsdUuid, String content, String contentType) throws SQLException, InvalidPageException {
+	public String addPage(String xsdUuid, String content, String contentType)
+			throws SQLException, InvalidPageException {
 		// Generar uuid aleatorio
 		UUID randomUuid = UUID.randomUUID();
 		String uuid = randomUuid.toString();
@@ -118,7 +119,7 @@ public class DBDAO implements DAO {
 				}
 			}
 		} else {
-			if(isPage(xsdUuid, "xsd")) {
+			if (isPage(xsdUuid, "xsd")) {
 				String query = "INSERT INTO " + contentType.toUpperCase() + " VALUES (?, ?, ?)";
 				// 1. Conexión a la base de datos
 				try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
@@ -141,7 +142,7 @@ public class DBDAO implements DAO {
 				}
 			} else {
 				throw new InvalidPageException("Error al recuperar el contenido");
-			}	
+			}
 		}
 
 	}
@@ -160,6 +161,30 @@ public class DBDAO implements DAO {
 				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
+		}
+	}
+
+	public String getXSDContent(String xsltId) throws InvalidPageException {
+		String query = "SELECT XSD.content FROM XSD, XSLT WHERE XSD.uuid=XSLT.xsd AND XSLT.uuid LIKE ?";
+		// 1. Conexión a la base de datos
+		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
+			// 2. Creación de la consulta
+			try (PreparedStatement statement = connection.prepareStatement(query)) {
+				statement.setString(1, xsltId);
+				// 4. Ejecución de la consulta
+				try (ResultSet result = statement.executeQuery()) {
+					if (result.next()) {
+						String xsdContent = result.getString("content");
+						return xsdContent;
+
+					} else {
+						throw new InvalidPageException("Error al recuperar el contenido");
+					}
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 }
