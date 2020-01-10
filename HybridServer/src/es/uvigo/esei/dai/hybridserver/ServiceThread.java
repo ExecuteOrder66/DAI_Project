@@ -62,12 +62,13 @@ public class ServiceThread implements Runnable {
 							if (request.getResourceParameters().isEmpty()) {
 								List<String> list = controller.getList(contentType);
 								Iterator<String> it = list.iterator();
-								String content = "";
+								String content = "<html><head></head><body>";
 								while (it.hasNext()) {
 									String link = it.next();
 									// cambiar html por contentType
 									content = content.concat("<a href=\"html?uuid=" + link + "\">" + link + "</a><br>");
 								}
+								content = content.concat("</body></html>");
 								response.setContentType(contentType);
 								response.setContent(content);
 							} else {
@@ -131,7 +132,7 @@ public class ServiceThread implements Runnable {
 										&& request.getResourceParameters().containsKey("xsd"))) {
 									String uuid = controller.addPage(request.getResourceParameters().get("xsd"), request.getResourceParameters().get(contentType), contentType);
 									response.setContentType(contentType);
-									response.setContent("<a href=\"" + contentType + "?uuid=" + uuid + "\">" + uuid + "</a>");
+									response.setContent("<html><head></head><body><a href=\"" + contentType + "?uuid=" + uuid + "\">" + uuid + "</a></body></html>");
 								} else {
 									String error400 = "<html><head></head><body>ERROR 400: Bad request</body></html>";
 									response.setStatus(HTTPResponseStatus.forCode(400));
