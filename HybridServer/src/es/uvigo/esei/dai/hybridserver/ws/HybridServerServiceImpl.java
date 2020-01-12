@@ -10,72 +10,27 @@ import java.util.List;
 
 import javax.jws.WebService;
 
+import es.uvigo.esei.dai.hybridserver.InvalidPageException;
+import es.uvigo.esei.dai.hybridserver.model.dao.DAO;
+
 @WebService(endpointInterface = "es.uvigo.esei.dai.hybridserver.ws.HybridServerService")
 public class HybridServerServiceImpl implements HybridServerService {
-
+	private final DAO dao;
+	
+	public HybridServerServiceImpl(DAO dao) {
+		this.dao = dao;
+	}
+	
 	@Override
-	public List<String> getHTMLuuids() {
-		List<String> list = new LinkedList<>();
-		String query = "SELECT uuid FROM HTML";
-		// 1. Conexión a la base de datos
-		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
-			// 2. Creación de la consulta
-			try (PreparedStatement statement = connection.prepareStatement(query)) {
-				// 4. Ejecución de la consulta
-				try (ResultSet result = statement.executeQuery()) {
-					while (result.next()) {
-						list.add(result.getString("uuid"));
-					}
-					return list;
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
+	public List<String> getUuids(String contentType) {
+		return dao.getList(contentType);
 	}
 
 	@Override
-	public List<String> getXMLuuids() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getContent(String uuid, String contentType) throws InvalidPageException {
+		return dao.getPage(uuid, contentType);
 	}
 
-	@Override
-	public List<String> getXSDuuids() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<String> getXSLTuuids() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getHTMLContent(String htmlId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getXMLContent(String xmlId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getXSDContent(String xsdId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getXSLTContent(String xsltId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public String getXSDuuid(String xsltId) {
