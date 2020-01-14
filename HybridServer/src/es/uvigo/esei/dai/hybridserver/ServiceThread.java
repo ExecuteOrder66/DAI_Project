@@ -21,6 +21,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import javax.xml.ws.WebServiceException;
 
 import org.xml.sax.SAXException;
 
@@ -51,8 +52,9 @@ public class ServiceThread implements Runnable {
 				HTTPResponse response = new HTTPResponse();
 
 				if (request.getResourceChain().equals("/")) {
-					response.setContent("<html><head></head><body>Boveda Martinez, Alejandro\n" + 
-							"Curras Ferradas, Rodrigo</body></html>");
+					/*Boveda Martinez, Alejandro\n" + 
+							"Curras Ferradas, Rodrigo*/
+					response.setContent("<html><head></head><body>Hybrid Server</body></html>");
 				} else {
 					String contentType = request.getResourceName();
 					if (contentType.equals("html") || contentType.equals("xml") || contentType.equals("xsd")
@@ -75,10 +77,11 @@ public class ServiceThread implements Runnable {
 								if(request.getResourceParameters().containsKey("uuid") && request.getResourceParameters().containsKey("xslt")) {
 									String xmlId = request.getResourceParameters().get("uuid");
 									String xsltId = request.getResourceParameters().get("xslt");
-									if (controller.isPage(xmlId, contentType) && controller.isPage(xsltId, "xslt")) {
-										String xmlContent = controller.getPage(xmlId, contentType);
-										String xsltContent = controller.getPage(xsltId, "xslt");
-										String xsdContent = controller.getXSDContent(xsltId);
+									String xmlContent = controller.getPage(xmlId, contentType);
+									String xsltContent = controller.getPage(xsltId, "xslt");
+									if (xmlContent != null && xsltContent != null) {
+										String xsdUUID = controller.getXSDuuid(xsltId);
+										String xsdContent = controller.getPage(xsdUUID, "xsd");
 
 										StringReader xmlReader = new StringReader(xmlContent);
 										StringReader xsltReader = new StringReader(xsltContent);
@@ -112,9 +115,10 @@ public class ServiceThread implements Runnable {
 									}
 								} else {
 									String uuid = request.getResourceParameters().get("uuid");
-									if (controller.isPage(uuid, contentType)) {
+									String content = controller.getPage(uuid, contentType);
+									if (content != null) {
 										response.setContentType(contentType);
-										response.setContent(controller.getPage(uuid, contentType));
+										response.setContent(content);
 									} else {
 										String error404 = "<html><head></head><body>ERROR 404: Page not found</body></html>";
 										response.setStatus(HTTPResponseStatus.forCode(404));
@@ -133,6 +137,7 @@ public class ServiceThread implements Runnable {
 									String uuid = controller.addPage(request.getResourceParameters().get("xsd"), request.getResourceParameters().get(contentType), contentType);
 									response.setContentType(contentType);
 									response.setContent("<html><head></head><body><a href=\"" + contentType + "?uuid=" + uuid + "\">" + uuid + "</a></body></html>");
+									//response.setContent("<a href=\"" + contentType + "?uuid=" + uuid + "\">" + uuid + "</a>");
 								} else {
 									String error400 = "<html><head></head><body>ERROR 400: Bad request</body></html>";
 									response.setStatus(HTTPResponseStatus.forCode(400));
