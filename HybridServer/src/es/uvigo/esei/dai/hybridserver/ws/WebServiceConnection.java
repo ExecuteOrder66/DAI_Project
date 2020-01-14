@@ -2,11 +2,13 @@ package es.uvigo.esei.dai.hybridserver.ws;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
 
 import es.uvigo.esei.dai.hybridserver.ServerConfiguration;
 
@@ -18,12 +20,15 @@ public class WebServiceConnection {
 		
 		for (ServerConfiguration server : serverConfList) {
 			URL url = new URL(server.getWsdl());
-
 			QName name = new QName(server.getNamespace(), server.getService());
-
-			Service service = Service.create(url, name);
 			
-			hybridServerServiceList.add(service.getPort(HybridServerService.class));
+			try {
+				Service service = Service.create(url, name);
+				hybridServerServiceList.add(service.getPort(HybridServerService.class));
+			} catch(WebServiceException e) {
+				//System.err.println(server.getName() + " is down");
+				//e.printStackTrace();
+			}
 		}
 	}
 	

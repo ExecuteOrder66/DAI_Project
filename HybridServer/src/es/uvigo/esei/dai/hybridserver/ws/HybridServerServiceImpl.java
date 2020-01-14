@@ -1,11 +1,5 @@
 package es.uvigo.esei.dai.hybridserver.ws;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.jws.WebService;
@@ -13,7 +7,7 @@ import javax.jws.WebService;
 import es.uvigo.esei.dai.hybridserver.InvalidPageException;
 import es.uvigo.esei.dai.hybridserver.model.dao.DAO;
 
-@WebService(endpointInterface = "es.uvigo.esei.dai.hybridserver.ws.HybridServerService")
+@WebService(endpointInterface = "es.uvigo.esei.dai.hybridserver.ws.HybridServerService", targetNamespace = "http://hybridserver.dai.esei.uvigo.es/", serviceName = "HybridServerService")
 public class HybridServerServiceImpl implements HybridServerService {
 	private final DAO dao;
 	
@@ -22,7 +16,7 @@ public class HybridServerServiceImpl implements HybridServerService {
 	}
 	
 	@Override
-	public List<String> getUuids(String contentType) {
+	public List<String> getUuidList(String contentType) {
 		return dao.getList(contentType);
 	}
 
@@ -33,8 +27,7 @@ public class HybridServerServiceImpl implements HybridServerService {
 
 
 	@Override
-	public String getXSDuuid(String xsltId) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getXSD(String xsltId) {
+		return dao.getXSDuuid(xsltId);
 	}
 }
