@@ -81,7 +81,8 @@ public class DBDAO implements DAO {
 					if (result.next()) {
 						return result.getString("content");
 					} else {
-						throw new InvalidPageException("Error al recuperar el contenido");
+						return null;
+						//throw new InvalidPageException("Error al recuperar el contenido");
 					}
 				}
 			}
@@ -179,6 +180,30 @@ public class DBDAO implements DAO {
 
 					} else {
 						throw new InvalidPageException("Error al recuperar el contenido");
+					}
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public String getXSDuuid(String xsltId) {
+		String query = "SELECT xsd FROM XSLT WHERE uuid LIKE ?";
+		// 1. Conexión a la base de datos
+		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
+			// 2. Creación de la consulta
+			try (PreparedStatement statement = connection.prepareStatement(query)) {
+				statement.setString(1, xsltId);
+				// 4. Ejecución de la consulta
+				try (ResultSet result = statement.executeQuery()) {
+					if (result.next()) {
+						String xsdUuid = result.getString("xsd");
+						return xsdUuid;
+
+					} else {
+						return null;
 					}
 				}
 			}

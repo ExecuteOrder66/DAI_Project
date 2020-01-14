@@ -11,4 +11,6 @@ public interface DAO {
 	public String getPage(String uuid, String contentType) throws InvalidPageException;
 	public String addPage(String xsdUuid, String content, String contentType) throws SQLException, InvalidPageException;
 	public String deletePage(String uuid, String contentType) throws SQLException;
+	public String getXSDContent(String xsltId) throws InvalidPageException;
+	public String getXSDuuid(String xsltId);
 }
