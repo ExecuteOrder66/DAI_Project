@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.ws.WebServiceException;
+
 import es.uvigo.esei.dai.hybridserver.InvalidPageException;
 import es.uvigo.esei.dai.hybridserver.ServerConfiguration;
 import es.uvigo.esei.dai.hybridserver.model.dao.DAO;
@@ -26,7 +28,21 @@ public class Controller implements DAO{
 	
 	@Override
 	public List<String> getList(String contentType) {
-		return dao.getList(contentType);
+		List<String> uuidList = dao.getList(contentType);
+		try {
+			WebServiceConnection ws = new WebServiceConnection(this.serverConfList);
+			List<HybridServerService> hybridServerServiceList = ws.getServers();
+			for(HybridServerService server : hybridServerServiceList) {
+				List<String> uuidServerList = server.getUuidList(contentType);
+				for(String uuid : uuidServerList) {
+					uuidList.add(uuid);
+				}
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return uuidList;
 	}
 	
 	@Override
@@ -65,8 +81,30 @@ public class Controller implements DAO{
 		return this.dao.deletePage(uuid, contentType);
 	}
 	
+	@Override
 	public String getXSDContent(String xsltId) throws InvalidPageException {
 		return this.dao.getXSDContent(xsltId);
+	}
+	
+	@Override
+	public String getXSDuuid(String xsltUuid) {
+		String xsdtUuid = this.dao.getXSDuuid(xsltUuid);
+		if(xsdtUuid == null) {
+			try {
+				WebServiceConnection ws = new WebServiceConnection(this.serverConfList);
+				List<HybridServerService> hybridServerServiceList = ws.getServers();
+				for(HybridServerService server : hybridServerServiceList) {
+					xsdtUuid = server.getXSD(xsltUuid);
+					if(xsdtUuid != null) {
+						return xsdtUuid;
+					}
+				}
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} 
+		return xsdtUuid;
 	}
 		
 }
