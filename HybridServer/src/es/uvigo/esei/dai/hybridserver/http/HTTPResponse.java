@@ -16,8 +16,8 @@ public class HTTPResponse {
 	Map<String, String> parameters = new LinkedHashMap<>();
 	
 	public HTTPResponse() {
-		// por defecto devuelve un estado 200 OK
 		this.setVersion(HTTPHeaders.HTTP_1_1.getHeader());
+		// por defecto devuelve un estado 200 OK
 		this.setStatus(HTTPResponseStatus.forCode(200));
 	}
 

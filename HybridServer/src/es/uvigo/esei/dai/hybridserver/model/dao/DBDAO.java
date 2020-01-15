@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +32,7 @@ public class DBDAO implements DAO {
 		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
 			// 2. Creación de la consulta
 			try (PreparedStatement statement = connection.prepareStatement(query)) {
-				// 4. Ejecución de la consulta
+				// 3. Ejecución de la consulta
 				try (ResultSet result = statement.executeQuery()) {
 					while (result.next()) {
 						list.add(result.getString("uuid"));
@@ -53,12 +54,12 @@ public class DBDAO implements DAO {
 			// 2. Creación de la consulta
 			try (PreparedStatement statement = connection.prepareStatement(query)) {
 				statement.setString(1, uuid);
-				// 4. Ejecución de la consulta
+				// 3. Ejecución de la consulta
 				try (ResultSet result = statement.executeQuery()) {
-					if (result == null) {
-						return false;
-					} else {
+					if (result.next()) {
 						return true;
+					} else {
+						return false;
 					}
 				}
 			}
@@ -69,20 +70,19 @@ public class DBDAO implements DAO {
 	}
 
 	@Override
-	public String getPage(String uuid, String contentType) throws InvalidPageException {
+	public String getPage(String uuid, String contentType) {
 		String query = "SELECT * FROM " + contentType.toUpperCase() + " WHERE uuid LIKE ?";
 		// 1. Conexión a la base de datos
 		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
 			// 2. Creación de la consulta
 			try (PreparedStatement statement = connection.prepareStatement(query)) {
 				statement.setString(1, uuid);
-				// 4. Ejecución de la consulta
+				// 3. Ejecución de la consulta
 				try (ResultSet result = statement.executeQuery()) {
 					if (result.next()) {
 						return result.getString("content");
 					} else {
 						return null;
-						//throw new InvalidPageException("Error al recuperar el contenido");
 					}
 				}
 			}
@@ -112,7 +112,7 @@ public class DBDAO implements DAO {
 					if (result == 1) {
 						return uuid;
 					} else {
-						throw new RuntimeException("Erro al insertar el contenido");
+						throw new RuntimeException("Add content error");
 					}
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -134,7 +134,7 @@ public class DBDAO implements DAO {
 						if (result == 1) {
 							return uuid;
 						} else {
-							throw new RuntimeException("Erro al insertar el contenido");
+							throw new RuntimeException("Add content error");
 						}
 					} catch (SQLException e) {
 						e.printStackTrace();
@@ -142,7 +142,7 @@ public class DBDAO implements DAO {
 					}
 				}
 			} else {
-				throw new InvalidPageException("Error al recuperar el contenido");
+				throw new InvalidPageException("Page does not exist");
 			}
 		}
 
@@ -165,30 +165,6 @@ public class DBDAO implements DAO {
 		}
 	}
 
-	public String getXSDContent(String xsltId) throws InvalidPageException {
-		String query = "SELECT XSD.content FROM XSD, XSLT WHERE XSD.uuid=XSLT.xsd AND XSLT.uuid LIKE ?";
-		// 1. Conexión a la base de datos
-		try (Connection connection = DriverManager.getConnection(db_url, db_user, db_password)) {
-			// 2. Creación de la consulta
-			try (PreparedStatement statement = connection.prepareStatement(query)) {
-				statement.setString(1, xsltId);
-				// 4. Ejecución de la consulta
-				try (ResultSet result = statement.executeQuery()) {
-					if (result.next()) {
-						String xsdContent = result.getString("content");
-						return xsdContent;
-
-					} else {
-						throw new InvalidPageException("Error al recuperar el contenido");
-					}
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-	
 	public String getXSDuuid(String xsltId) {
 		String query = "SELECT xsd FROM XSLT WHERE uuid LIKE ?";
 		// 1. Conexión a la base de datos
@@ -201,7 +177,6 @@ public class DBDAO implements DAO {
 					if (result.next()) {
 						String xsdUuid = result.getString("xsd");
 						return xsdUuid;
-
 					} else {
 						return null;
 					}

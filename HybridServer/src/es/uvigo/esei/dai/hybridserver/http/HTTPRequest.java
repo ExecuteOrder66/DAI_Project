@@ -77,10 +77,8 @@ public class HTTPRequest {
 						if (type != null && type.startsWith("application/x-www-form-urlencoded")) {
 							this.content = URLDecoder.decode(content, "UTF-8");
 						}
-						System.out.println();
 						dataLineRscChainParams = content.split("&");
 						for (int i = 0; i < dataLineRscChainParams.length; i++) {
-							System.out.println(dataLineRscChainParams[i]);
 							dataLineRscChainParam = dataLineRscChainParams[i].split("=");
 							this.resourceParameters.put(dataLineRscChainParam[0], dataLineRscChainParam[1]);
 						}

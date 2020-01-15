@@ -1,9 +1,10 @@
 package es.uvigo.esei.dai.hybridserver;
 
 import java.io.IOException;
+
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.Endpoint;
 
+import es.uvigo.esei.dai.hybridserver.configuration.Configuration;
 import es.uvigo.esei.dai.hybridserver.controller.Controller;
 import es.uvigo.esei.dai.hybridserver.model.dao.DAO;
 import es.uvigo.esei.dai.hybridserver.model.dao.DBDAO;
@@ -25,10 +27,8 @@ public class HybridServer {
 	private ExecutorService threadPool;
 	private boolean stop;
 	private String webService = null;
-	private List<ServerConfiguration> servers;
 	private Controller controller;
 	private DAO dao;
-
 	private Endpoint endPoint;
 
 	public HybridServer() {
@@ -54,7 +54,6 @@ public class HybridServer {
 		this.dao = new DBDAO(config.getDbURL(), config.getDbUser(), config.getDbPassword());
 		this.controller = new Controller(this.dao, config.getServers());
 		this.webService = config.getWebServiceURL();
-		this.servers = config.getServers();
 	}
 
 	public int getPort() {
@@ -110,7 +109,7 @@ public class HybridServer {
 		}
 
 		this.serverThread = null;
-		
+
 		if (this.webService != null) {
 			this.endPoint.stop();
 		}

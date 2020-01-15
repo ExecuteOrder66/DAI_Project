@@ -1,6 +1,6 @@
 package es.uvigo.esei.dai.hybridserver;
 
-public class InvalidPageException extends Exception{
+public class InvalidPageException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	public InvalidPageException() {
@@ -18,8 +18,8 @@ public class InvalidPageException extends Exception{
 		super(message, cause);
 	}
 
-	public InvalidPageException(String message, Throwable cause,
-			boolean enableSuppression, boolean writableStackTrace) {
+	public InvalidPageException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }

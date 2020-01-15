@@ -7,13 +7,13 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+
 import java.net.Socket;
+
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -21,7 +21,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import javax.xml.ws.WebServiceException;
 
 import org.xml.sax.SAXException;
 
@@ -52,29 +51,30 @@ public class ServiceThread implements Runnable {
 				HTTPResponse response = new HTTPResponse();
 
 				if (request.getResourceChain().equals("/")) {
-					/*Boveda Martinez, Alejandro\n" + 
-							"Curras Ferradas, Rodrigo*/
-					response.setContent("<html><head></head><body>Hybrid Server</body></html>");
+					 response.setContent(
+					 "<html><head></head><body>Boveda Martinez, Alejandro</br>Curras Ferradas, Rodrigo</body></html>");
+					//response.setContent("<html><head></head><body>Hybrid Server</body></html>");
 				} else {
 					String contentType = request.getResourceName();
 					if (contentType.equals("html") || contentType.equals("xml") || contentType.equals("xsd")
 							|| contentType.equals("xslt")) {
-						// GET
-						if (request.getMethod().equals(HTTPRequestMethod.GET)) {
+						switch (request.getMethod()) {
+						case GET:
 							if (request.getResourceParameters().isEmpty()) {
 								List<String> list = controller.getList(contentType);
 								Iterator<String> it = list.iterator();
 								String content = "<html><head></head><body>";
 								while (it.hasNext()) {
 									String link = it.next();
-									// cambiar html por contentType
-									content = content.concat("<a href=\"html?uuid=" + link + "\">" + link + "</a><br>");
+									content = content.concat(
+											"<a href=\"" + contentType + "?uuid=" + link + "\">" + link + "</a><br>");
 								}
 								content = content.concat("</body></html>");
-								response.setContentType(contentType);
+								response.setContentType("html");
 								response.setContent(content);
 							} else {
-								if(request.getResourceParameters().containsKey("uuid") && request.getResourceParameters().containsKey("xslt")) {
+								if (request.getResourceParameters().containsKey("uuid")
+										&& request.getResourceParameters().containsKey("xslt")) {
 									String xmlId = request.getResourceParameters().get("uuid");
 									String xsltId = request.getResourceParameters().get("xslt");
 									String xmlContent = controller.getPage(xmlId, contentType);
@@ -86,21 +86,22 @@ public class ServiceThread implements Runnable {
 										StringReader xmlReader = new StringReader(xmlContent);
 										StringReader xsltReader = new StringReader(xsltContent);
 										StringReader xsdReader = new StringReader(xsdContent);
-										
+
 										StringReader input = new StringReader(controller.getPage(xmlId, contentType));
 										StringWriter output = new StringWriter();
-										
+
 										// validar xml con el xsd
 										try {
-											SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+											SchemaFactory schemaFactory = SchemaFactory
+													.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 											Schema schema = schemaFactory.newSchema(new StreamSource(xsdReader));
-								            Validator validator = schema.newValidator();
-								            validator.validate(new StreamSource(xmlReader));
-								        } catch (SAXException e) {
-								        	String error400 = "<html><head></head><body>ERROR 400: Bad request</body></html>";
+											Validator validator = schema.newValidator();
+											validator.validate(new StreamSource(xmlReader));
+										} catch (SAXException e) {
+											String error400 = "<html><head></head><body>ERROR 400: Bad request</body></html>";
 											response.setStatus(HTTPResponseStatus.forCode(400));
 											response.setContent(error400);
-								        }
+										}
 										// transformar xml
 										TransformerFactory tFactory = TransformerFactory.newInstance();
 										Transformer transformer = tFactory.newTransformer(new StreamSource(xsltReader));
@@ -114,48 +115,55 @@ public class ServiceThread implements Runnable {
 										response.setContent(error404);
 									}
 								} else {
-									String uuid = request.getResourceParameters().get("uuid");
-									String content = controller.getPage(uuid, contentType);
-									if (content != null) {
-										response.setContentType(contentType);
-										response.setContent(content);
-									} else {
-										String error404 = "<html><head></head><body>ERROR 404: Page not found</body></html>";
-										response.setStatus(HTTPResponseStatus.forCode(404));
-										response.setContent(error404);
+									if (request.getResourceParameters().containsKey("uuid")) {
+										String uuid = request.getResourceParameters().get("uuid");
+										String content = controller.getPage(uuid, contentType);
+										if (content != null) {
+											response.setContentType(contentType);
+											response.setContent(content);
+										} else {
+											String error404 = "<html><head></head><body>ERROR 404: Page not found</body></html>";
+											response.setStatus(HTTPResponseStatus.forCode(404));
+											response.setContent(error404);
+										}
 									}
 								}
 							}
-						} else {
-							// POST
+							break;
+						case POST:
 							if (request.getMethod().equals(HTTPRequestMethod.POST)) {
 								if (request.getResourceParameters().containsKey("html")
 										|| request.getResourceParameters().containsKey("xml")
 										|| request.getResourceParameters().containsKey("xsd")
 										|| (request.getResourceParameters().containsKey("xslt")
-										&& request.getResourceParameters().containsKey("xsd"))) {
-									String uuid = controller.addPage(request.getResourceParameters().get("xsd"), request.getResourceParameters().get(contentType), contentType);
+												&& request.getResourceParameters().containsKey("xsd"))) {
+									String uuid = controller.addPage(request.getResourceParameters().get("xsd"),
+											request.getResourceParameters().get(contentType), contentType);
 									response.setContentType(contentType);
-									response.setContent("<html><head></head><body><a href=\"" + contentType + "?uuid=" + uuid + "\">" + uuid + "</a></body></html>");
-									//response.setContent("<a href=\"" + contentType + "?uuid=" + uuid + "\">" + uuid + "</a>");
+									response.setContent("<html><head></head><body><a href=\"" + contentType + "?uuid="
+											+ uuid + "\">" + uuid + "</a></body></html>");
 								} else {
 									String error400 = "<html><head></head><body>ERROR 400: Bad request</body></html>";
 									response.setStatus(HTTPResponseStatus.forCode(400));
 									response.setContent(error400);
 								}
 							}
-							// DELETE
+							break;
+						case DELETE:
 							if (request.getMethod().equals(HTTPRequestMethod.DELETE)) {
 								String uuid = request.getResourceParameters().get("uuid");
 								if (controller.deletePage(uuid, contentType) != null) {
 									response.setContent(
-											"<html><head></head><body>Borrada la pagina: " + uuid + "</body></html>");
+											"<html><head></head><body>Deleted page: " + uuid + "</body></html>");
 								} else {
 									String error404 = "<html><head></head><body>ERROR 404: Page not found</body></html>";
 									response.setStatus(HTTPResponseStatus.forCode(404));
 									response.setContent(error404);
 								}
 							}
+							break;
+						default:
+							break;
 						}
 					} else {
 						String error400 = "<html><head></head><body>ERROR 400: Bad request</body></html>";
@@ -165,7 +173,7 @@ public class ServiceThread implements Runnable {
 				}
 				response.print(writer);
 			} catch (HTTPParseException eHTTP) {
-				// ERROR PARSEO HTTP
+				// ERROR EN EL PARSEO HTTP
 				Writer writer = new OutputStreamWriter(socket.getOutputStream());
 				HTTPResponse response = new HTTPResponse();
 				String error400 = "<html><head></head><body>ERROR 400: Bad Request</body></html>";
@@ -176,7 +184,7 @@ public class ServiceThread implements Runnable {
 
 				eHTTP.printStackTrace();
 			} catch (InvalidPageException e) {
-				// ERROR 404
+				// ERROR AL NO LOCALIZAR LA PAGINA
 				Writer writer = new OutputStreamWriter(socket.getOutputStream());
 				HTTPResponse response = new HTTPResponse();
 				String error404 = "<html><head></head><body>ERROR 404: Not Found</body></html>";
@@ -185,7 +193,7 @@ public class ServiceThread implements Runnable {
 				response.setContent(error404);
 				response.print(writer); // Enviamos respuesta
 			} catch (IOException e) {
-				// ERROR 500
+				// ERROR SERVIDOR
 				Writer writer = new OutputStreamWriter(socket.getOutputStream());
 				HTTPResponse response = new HTTPResponse();
 				String error500 = "<html><head></head><body>ERROR 500: Internal Server Error</body></html>";
@@ -196,7 +204,7 @@ public class ServiceThread implements Runnable {
 
 				e.printStackTrace();
 			} catch (RuntimeException e) {
-				// ERROR 500
+				// ERROR SERVIDOR
 				Writer writer = new OutputStreamWriter(socket.getOutputStream());
 				HTTPResponse response = new HTTPResponse();
 				String error500 = "<html><head></head><body>ERROR 500: Internal Server Error</body></html>";
